@@ -1,0 +1,86 @@
+---
+title: "Homework 7"
+author: "Angela McMahon"
+date: "3/5/2026"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+```
+
+
+### Loading and Cleaning the Diamonds Data Set 
+```{r}
+diamonds2 <- diamonds %>%
+  filter(color %in% c("D", "G", "J"), clarity%in% c("IF", "VS1", "I1")) 
+diamonds2 %>% 
+  count(color, clarity) %>% 
+  knitr::kable()
+```
+
+Loaded the diamonds data set from the ggplot2 package. Filtered the data to show only points with color equal to D, G or J and clarity equal to I1, IF, or VS1. Then stored the data in diamonds2. 
+^[Question 1 completed.]
+
+### Price vs. Carat (weight) Scatterplot
+```{r}
+ggplot(diamonds2, aes(x= carat, y=price)) +
+  geom_point(alpha=0.5) + 
+  geom_smooth(method="lm")
+```
+
+The scatter plot shows a positive correlation between the price and weight (carats) of the diamonds. The correlation is somewhat linear however not very strong. 
+^[Question 2 completed.]
+
+### Price vs. Carat (weight) Scatterplot by Diamond Color  
+```{r}
+ggplot(diamonds2, aes(x= carat, y=price, color=color)) +
+  geom_point(alpha=0.5) + 
+  geom_smooth(method="lm")
+```
+
+For each diamond color, when the carat/weigth increases the price also increases. Each color shows a positive linear association, each with their own slope. 
+^[Question 3 completed.]
+
+
+### Scatterplot as Above With Incorperated Clarity
+```{r}
+ggplot(diamonds2, aes(x= carat, y=price, color=color, shape=clarity)) +
+  geom_point(alpha=0.5) + 
+  geom_smooth(aes(linetype= clarity), method="lm")
+```
+
+The graph is not very clear as most of the points are overlapping on the left side of the graph. It is not completely clear there are different shapes in the overlapping areas and the data is not easy to follow. I would not consider this plot reliable to make conclusions on.
+^[Question 4 completed.]
+
+
+### Price vs. Carat Scatterplot Facetted by Clarity and Color
+```{r}
+ggplot(diamonds2, aes(x= carat, y=price)) +
+  geom_point(alpha=0.5) + 
+  geom_smooth(method="lm") + 
+  facet_wrap(color~clarity)
+```
+
+The relationships between the carat weight and price show positive correlations for each color/clarity pair.  The worst (I1) diamonds showing the flattest slope across all colors. The middle-grade (VS1) diamonds show steeper slopes that flatten as the color goes from best to worse. Lastly the best (IF) diamonds showed the steepest slope in the best color and slopes similar to the VS1 for the middle/worst color categories. The steepest slope shown is when color is best (D) and clarity is best (IF). 
+^[Question 5 completed.]
+
+
+### Which Color-Clarity Combination has the Highest Price per Carat Ratio?
+```{r}
+diamonds2 %>% 
+  mutate(PrpC=price/carat)%>% 
+  group_by(color, clarity) %>%
+  summarize(avg_ppc=mean(PrpC)) %>% 
+  arrange(desc(avg_ppc)) %>% 
+  kable()
+  
+```
+
+The best (D) color and IF (worst) clarity has the highest price per carat ratio. Yes, the table generally agrees with the plots that this color-clarity combination has the highest price per carat ratio and the proceeding pairs. 
+^[Question 6 completed.]
